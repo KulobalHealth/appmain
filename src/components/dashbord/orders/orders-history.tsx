@@ -332,7 +332,7 @@ export default function OrdersHistory() {
       </div>
 
       {/* Orders List */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         {filteredOrders.length > 0 ? (
           filteredOrders.map((order) => {
             const statusConfig = getStatusConfig(order.status)
@@ -344,96 +344,42 @@ export default function OrdersHistory() {
             return (
               <div
                 key={order.id}
-                className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+                className="bg-white rounded-lg border border-gray-200 hover:shadow-md hover:border-emerald-200 transition-all duration-200 overflow-hidden cursor-pointer"
+                onClick={() => handleViewDetails(order)}
               >
-                <div className="p-4 md:p-6">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="p-3">
+                  <div className="flex items-center gap-3">
+                    {/* Status Icon */}
+                    <div className={`w-9 h-9 rounded-lg ${statusConfig.bg} flex items-center justify-center flex-shrink-0`}>
+                      <StatusIcon className={`w-4 h-4 ${statusConfig.text}`} />
+                    </div>
+                    
                     {/* Order Info */}
-                    <div className="flex items-start gap-4 flex-1">
-                      <div className={`w-12 h-12 rounded-xl ${statusConfig.bg} flex items-center justify-center flex-shrink-0`}>
-                        <StatusIcon className={`w-6 h-6 ${statusConfig.text}`} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-sm text-gray-900 truncate">
+                          {order.orderNumber || order.id?.slice(0, 8)}
+                        </span>
+                        <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded-full ${statusConfig.bg} ${statusConfig.text}`}>
+                          {statusConfig.label}
+                        </span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <span className="font-semibold text-gray-900 truncate">
-                            {order.orderNumber || order.id}
-                          </span>
-                          <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full ${statusConfig.bg} ${statusConfig.text}`}>
-                            {statusConfig.label}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-700 mb-2 line-clamp-1">
-                          {itemCount === 1 
-                            ? (firstItem?.name || "Order Item")
-                            : `${firstItem?.name || "Order Item"} + ${itemCount - 1} more`
-                          }
-                        </p>
-                        <div className="flex items-center gap-3 text-xs text-gray-500 flex-wrap">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3.5 h-3.5" />
-                            {formatDate(order.createdAt)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Package className="w-3.5 h-3.5" />
-                            {totalQuantity} item{totalQuantity !== 1 ? "s" : ""}
-                          </span>
-                          {order.paymentMethod && (
-                            <span className="flex items-center gap-1">
-                              <CreditCard className="w-3.5 h-3.5" />
-                              {order.paymentMethod === "online-payment" || order.paymentMethod === "PAYMENT_ON_ONLINE"
-                                ? "Online"
-                                : order.paymentMethod === "cash-on-delivery" || order.paymentMethod === "PAYMENT_ON_DELIVERY"
-                                ? "Cash on Delivery"
-                                : order.paymentMethod}
-                            </span>
-                          )}
-                        </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <span>{totalQuantity} item{totalQuantity !== 1 ? "s" : ""}</span>
+                        <span>•</span>
+                        <span>{formatDate(order.createdAt)}</span>
                       </div>
                     </div>
 
-                    {/* Price and Action */}
-                    <div className="flex items-center gap-4 md:gap-6">
-                      <div className="text-right">
-                        <p className="text-xs text-gray-500">Total</p>
-                        <p className="text-lg font-bold text-gray-900">GH₵ {(order.totalCost || 0).toFixed(2)}</p>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="rounded-[10px] border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 flex items-center gap-1.5 px-4"
-                        onClick={() => handleViewDetails(order)}
-                      >
-                        <Eye className="w-4 h-4" />
-                        Details
-                        <ChevronRight className="w-4 h-4" />
-                      </Button>
+                    {/* Price */}
+                    <div className="text-right flex-shrink-0">
+                      <p className="font-bold text-sm text-gray-900">GH₵ {(order.totalCost || 0).toFixed(2)}</p>
                     </div>
+                    
+                    {/* Arrow */}
+                    <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
                   </div>
                 </div>
-
-                {/* Progress indicator for active orders */}
-                {(order.status === "pending" || order.status === "processing" || order.status === "shipped") && (
-                  <div className="px-4 md:px-6 pb-4">
-                    <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
-                      <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full transition-all duration-500 ${
-                            order.status === "pending" 
-                              ? "w-1/4 bg-amber-500" 
-                              : order.status === "processing" 
-                              ? "w-2/4 bg-blue-500" 
-                              : "w-3/4 bg-purple-500"
-                          }`}
-                        />
-                      </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">
-                        {order.status === "pending" && "Awaiting confirmation"}
-                        {order.status === "processing" && "Being prepared"}
-                        {order.status === "shipped" && "On the way"}
-                      </span>
-                    </div>
-                  </div>
-                )}
               </div>
             )
           })

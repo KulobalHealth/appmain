@@ -108,11 +108,8 @@ export const usePaymentOrdersStore = create<PaymentOrdersStore>()((set, get) => 
   fetchPayments: async (pharmacyId) => {
     set({ isLoading: true, error: null })
     try {
-      const base = process.env.NEXT_PUBLIC_MARKET_URL
-      if (!base) throw new Error("NEXT_PUBLIC_MARKET_URL is not configured")
-
       const resolvedPharmacyId = resolvePharmacyId(pharmacyId)
-      const url = `${base.replace(/\/$/, "")}/payment/orders/${resolvedPharmacyId}`
+      const url = `/api/payments?pharmacyId=${resolvedPharmacyId}`
 
       const response = await axios.get(url, { withCredentials: true })
       const payments = extractPayments(response.data).map(toPaymentOrder)
@@ -128,10 +125,7 @@ export const usePaymentOrdersStore = create<PaymentOrdersStore>()((set, get) => 
   createPayment: async (payload) => {
     set({ isLoading: true, error: null })
     try {
-      const base = process.env.NEXT_PUBLIC_MARKET_URL
-      if (!base) throw new Error("NEXT_PUBLIC_MARKET_URL is not configured")
-
-      const url = `${base.replace(/\/$/, "")}/payment/orders`
+      const url = `/api/payments`
       const requestBody = {
         pharmacyId: resolvePharmacyId(payload.pharmacyId),
         orderId: payload.orderId,

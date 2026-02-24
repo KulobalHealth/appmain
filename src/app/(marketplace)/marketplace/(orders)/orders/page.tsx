@@ -114,7 +114,7 @@ export default function OrderHistory() {
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-2">
           {!isAuthenticated ? (
             <div className="text-center py-8 text-gray-500">
               Please log in to view your orders.
@@ -125,68 +125,65 @@ export default function OrderHistory() {
             </div>
           ) : filteredOrders.length > 0 ? (
             filteredOrders.map((order) => (
-              <div
+              <Link 
                 key={order.id}
-                className="border rounded-lg overflow-hidden bg-white dark:bg-background"
+                href={`/marketplace/orders/${order.id}`}
+                className="block border rounded-lg overflow-hidden bg-white dark:bg-background hover:shadow-md hover:border-emerald-200 transition-all"
               >
-                <div className="p-4 flex flex-col md:flex-row gap-4">
-                  <div className="bg-gray-100 p-4 rounded-md w-full md:w-36 h-36 flex items-center justify-center dark:bg-neutral-900">
+                <div className="p-3 flex items-center gap-3">
+                  {/* Compact Image */}
+                  <div className="bg-gray-100 rounded-md w-14 h-14 flex-shrink-0 flex items-center justify-center dark:bg-neutral-900">
                     <Image
                       src="/med.png"
                       alt="Product"
-                      width={120}
-                      height={120}
+                      width={40}
+                      height={40}
                       className="object-contain"
                     />
                   </div>
 
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold">
-                      {order.items.length} items
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Order No. #{order.orderNumber}
+                  {/* Order Info - Compact */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold text-sm truncate">
+                        {order.items.length} {order.items.length === 1 ? 'item' : 'items'}
+                      </h3>
+                      <span
+                        className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium ${getStatusClasses(
+                          order.status
+                        )}`}
+                      >
+                        {order.status === "delivered" ? (
+                          <CheckCircle className="mr-0.5 h-2.5 w-2.5" />
+                        ) : (
+                          <Clock className="mr-0.5 h-2.5 w-2.5" />
+                        )}
+                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 truncate">
+                      Order #{order.orderNumber}
                     </p>
+                  </div>
 
-                    <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-600">
-                      <span>Total: GH₵ {(order.totalCost || 0).toFixed(2)}</span>
-                      {/* Payment type, amount paid, installment features hidden */}
-                    </div>
-
-                    <div
-                      className={`mt-4 inline-flex items-center px-2 py-1 rounded-full ${getStatusClasses(
-                        order.status
-                      )} text-xs`}
-                    >
-                      {order.status === "delivered" ? (
-                        <CheckCircle className="mr-1 h-3 w-3" />
-                      ) : (
-                        <Clock className="mr-1 h-3 w-3" />
-                      )}
-                      {order.status.charAt(0).toUpperCase() +
-                        order.status.slice(1)}
-                    </div>
-                    <div className="text-sm text-gray-500 mt-1">
+                  {/* Price & Date */}
+                  <div className="text-right flex-shrink-0">
+                    <p className="font-bold text-sm text-gray-900 dark:text-foreground">
+                      GH₵ {(order.totalCost || 0).toFixed(2)}
+                    </p>
+                    <p className="text-[10px] text-gray-500">
                       {new Date(order.createdAt).toLocaleDateString("en-GB", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
                       })}
-                    </div>
+                    </p>
                   </div>
 
-                  <div className="flex items-center">
-                    <Link href={`/marketplace/orders/${order.id}`}>
-                      <Button
-                        variant="outline"
-                        className="text-emerald-500 border-emerald-500 hover:bg-emerald-50"
-                      >
-                        View details <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </div>
+                  {/* Arrow */}
+                  <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
                 </div>
-              </div>
+              </Link>
             ))
           ) : (
             <div className="text-center py-8 text-gray-500">
